@@ -1,0 +1,50 @@
+一、
+	安装 raspberry Pi imager
+	设置用户密码、ssh wifi 等信息
+	烧录系统
+	插上主板开机自动安装系统
+二、
+	启动ssh
+	sudo systemctl start ssh
+	设置开机自启动ssh
+	sudo systemctl enable ssh
+三、
+	客户端连接ssh
+	可安装mRemoteNG 用做ssh客户端
+	选择ssh2协议 输入主机名 用户名 密码 既可连接
+四、
+	设置静态ip
+	ip a   查看当前网络接口信息
+	例：
+		3: wlan0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+			link/ether 2c:cf:67:29:61:b1 brd ff:ff:ff:ff:ff:ff
+			inet 192.168.3.188/24 brd 192.168.3.255 scope global wlan0
+			   valid_lft forever preferred_lft forever
+			inet6 fe80::2ecf:67ff:fe29:61b1/64 scope link
+			   valid_lft forever preferred_lft forever
+	cd /etc/netplan
+	ls -l
+	找到yaml文件 如 50-cloud-init.yaml
+	可备份一份 sudo cp 50-cloud-init.yaml 50-cloud-init.yaml_vbefore
+	sudo nano 50-cloud-init-yaml  编辑配置文件
+	dhcp4: false
+            optional: true
+            addresses: [192.168.3.188/24] # 静态 IP 地址和子网掩码
+            routes:
+              - to: default
+                via: 192.168.3.1 # 网关地址
+            nameservers:
+                addresses: [192.168.3.1] # DNS 服务器地址
+                search: []
+	如上所示 对应部分配置改成这样
+	sudo netplan apply  配置生效
+五、
+	安装 1Panel 面板 可参考https://1panel.cn/docs/installation/online_installation/
+	sudo curl -sSL https://resource.fit2cloud.com/1panel/package/quick_start.sh -o quick_start.sh && sudo bash quick_start.sh
+	安装中会提示确认用户名和密码
+	http://目标服务器 IP 地址:目标端口/安全入口 例：http://192.168.3.188:14710/
+	1pctl user-info 可重置安全入口
+	
+	
+
+	
